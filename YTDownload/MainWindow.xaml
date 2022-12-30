@@ -109,7 +109,9 @@
                                       ItemTemplate="{StaticResource ResourceKey=YTVideoElement}">
                         </ItemsControl>
                     </ScrollViewer>
-                    <TextBlock Grid.Row="1" Text="{Binding StatusMessage}"/>
+                    <TextBlock Grid.Row="1" 
+                               Text="{Binding StatusMessage}"
+                               Style="{StaticResource TextBlockRegular}"/>
                 </Grid>
 
                 <!-- Metadata section -->
