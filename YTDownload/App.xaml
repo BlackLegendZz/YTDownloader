@@ -1,0 +1,19 @@
+﻿<Application x:Class="YTDownload.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:YTDownload"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Style/Colours.xaml"/>
+                <ResourceDictionary Source="Style/Icons.xaml"/>
+
+                <ResourceDictionary Source="Style/ButtonStyle.xaml"/>
+                <ResourceDictionary Source="Style/PathStyle.xaml"/>
+                <ResourceDictionary Source="Style/TextBoxStyle.xaml"/>
+                <ResourceDictionary Source="Style/TextBlockStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

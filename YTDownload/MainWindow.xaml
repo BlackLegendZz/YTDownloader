@@ -1,0 +1,173 @@
+﻿<Window x:Class="YTDownload.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:YTDownload"
+        xmlns:VM="clr-namespace:YTDownload.ViewModel"
+        mc:Ignorable="d"
+        Title="MainWindow" 
+        MinHeight="450" Height="450" 
+        MinWidth="330" Width="800"
+        WindowStyle="None"
+        Background="Transparent"
+        AllowsTransparency="True">
+    <Window.DataContext>
+        <VM:MainViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <ResourceDictionary Source="View/YTVideoElement.xaml"/>
+    </Window.Resources>
+    <Border BorderThickness="1.5"
+            CornerRadius="10">
+        <Border.BorderBrush>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="{StaticResource borderColour1}" Offset="0"/>
+                <GradientStop Color="{StaticResource borderColour2}" Offset="0.5"/>
+                <GradientStop Color="{StaticResource borderColour3}" Offset="1"/>
+            </LinearGradientBrush>
+        </Border.BorderBrush>
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="{StaticResource primaryBGColour1}" Offset="0"/>
+                <GradientStop Color="{StaticResource primaryBGColour2}" Offset="1"/>
+            </LinearGradientBrush>
+        </Border.Background>
+        
+        <Grid Margin="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="45"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <!-- Window Control -->
+            <StackPanel Grid.Row="0"
+                        Orientation="Horizontal"
+                        FlowDirection="RightToLeft"
+                        Background="Transparent"
+                        MouseLeftButtonDown="StackPanel_MouseLeftButtonDown"
+                        x:Name="StackPanelWindowControl">
+                <Button Click="WindowClose_Click"
+                        Style="{StaticResource WindowControlButton}"
+                        Tag="{StaticResource colour4}">
+                    <Path Data="{StaticResource IconClose}" Style="{StaticResource WindowControlIconStyle}"/>
+                </Button>
+                <!--Button Click="WindowMaximize_Click"
+                        Style="{StaticResource WindowControlButton}"
+                        Tag="{StaticResource colour6}">
+                    <Path Data="{StaticResource IconMaximize}" Style="{StaticResource WindowControlIconStyle}"/>
+                </Button-->
+                <Button Click="WindowMinimize_Click"
+                        Style="{StaticResource WindowControlButton}"
+                        Tag="{StaticResource colour3}">
+                    <Path Data="{StaticResource IconMinimize}" Style="{StaticResource WindowControlIconStyle}"/>
+                </Button>
+            </StackPanel>
+            
+            <!-- Adding YT urls -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0"
+                       Text="Youtube URL:"
+                       Margin="5"
+                       Style="{StaticResource TextBlockRegular}"
+                       Foreground="{StaticResource titleColour1}"/>
+                <TextBox Grid.Column="1"
+                         Margin="5"
+                         Text="{Binding Url}"
+                         Style="{StaticResource NormalTextBoxStyle}"
+                         Height="30"/>
+                <Button Grid.Column="2"
+                        Content="Add Video"
+                        Style="{StaticResource NormalButtonStyle}"
+                        Command="{Binding FetchVideoCommand}"/>
+            </Grid>
+
+            <!-- Main window -->
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Video list section -->
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <ScrollViewer Grid.Row="0"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <ItemsControl ItemsSource="{Binding VideoCollection}"
+                                      ItemTemplate="{StaticResource ResourceKey=YTVideoElement}">
+                        </ItemsControl>
+                    </ScrollViewer>
+                    <TextBlock Grid.Row="1" Text="{Binding StatusMessage}"/>
+                </Grid>
+
+                <!-- Metadata section -->
+                <StackPanel Grid.Column="1"
+                            Visibility="{Binding MetadataWindowVisibile}">
+                    <TextBlock Text="Metadata"
+                               Style="{StaticResource TextBlockTitle}"/>
+                    <Grid Width="300">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0"
+                                   Text="Title"
+                                   Style="{StaticResource TextBlockRegular}"/>
+                        <TextBox Grid.Row="0" Grid.Column="1"
+                                 Text="{Binding MetadataTitle}"
+                                 Style="{StaticResource NormalTextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0"
+                                   Text="Album"
+                                   Style="{StaticResource TextBlockRegular}"/>
+                        <TextBox Grid.Row="1" Grid.Column="1"
+                                 Text="{Binding MetadataAlbum}"
+                                 Style="{StaticResource NormalTextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0"
+                                   Text="Interpreter"
+                                   Style="{StaticResource TextBlockRegular}"/>
+                        <TextBox Grid.Row="2" Grid.Column="1"
+                                 Text="{Binding MetadataInterpreter}"
+                                 Style="{StaticResource NormalTextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0"
+                                   Text="Year"
+                                   Style="{StaticResource TextBlockRegular}"/>
+                        <TextBox Grid.Row="3" Grid.Column="1"
+                                 Text="{Binding MetadataYear}"
+                                 Style="{StaticResource NormalTextBoxStyle}"/>
+
+                        <TextBlock Grid.Row="4" Grid.Column="0"
+                                   Text="Tracknumber"
+                                   Style="{StaticResource TextBlockRegular}"/>
+                        <TextBox Grid.Row="4" Grid.Column="1"
+                                 Text="{Binding MetadataTracknumber}"
+                                 Style="{StaticResource NormalTextBoxStyle}"/>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+    
+</Window>

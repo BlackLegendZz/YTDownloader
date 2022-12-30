@@ -1,0 +1,53 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DataTemplate x:Key="YTVideoElement">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <RadioButton Grid.Column="0" 
+                         Command="{Binding EditMetadataCommand}"
+                         CommandParameter="{Binding Url}"
+                         HorizontalContentAlignment="Left"
+                         Style="{StaticResource YTButton}"
+                         GroupName="ytelem">
+                <StackPanel Orientation="Horizontal"
+                            Margin="5">
+                    <Border BorderBrush="Black"
+                            BorderThickness="5"
+                            Width="55"
+                            Height="55" 
+                            Margin="0,0,10,0"/>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" 
+                                   Text="{Binding Title}"
+                                   Style="{StaticResource YTButtonText}" Foreground="{StaticResource  titleColour3}"/>
+                        <TextBlock Grid.Row="1"
+                                   Text="{Binding Author}" 
+                                   Style="{StaticResource YTButtonText}"
+                                   FontSize="12"/>
+                        <TextBlock Grid.Row="1" 
+                                   Text="{Binding Length}" 
+                                   Margin="150,0,0,0" 
+                                   Style="{StaticResource YTButtonText}"
+                                   FontSize="12"/>
+                    </Grid>
+                </StackPanel>
+            </RadioButton>
+            <Button Grid.Column="1"
+                    Style="{StaticResource DeleteButtonStyle}"
+                    Height="Auto"
+                    Command="{Binding RemoveVideoCommand}"
+                    CommandParameter="{Binding Url}"
+                    HorizontalContentAlignment="Left"
+                    Tag="{StaticResource colour1}">
+                <Path Data="{StaticResource IconDelete}" Style="{StaticResource WindowControlIconStyle}"/>
+            </Button>
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>
