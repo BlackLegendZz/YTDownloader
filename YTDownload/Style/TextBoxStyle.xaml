@@ -2,12 +2,9 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!--Normal TextBox button-->
     <Style x:Key="NormalTextBoxStyle" TargetType="TextBox">
-        <Setter Property="Height" Value="25"/>
         <Setter Property="FontFamily" Value="Montserrat"/>
         <Setter Property="FontWeight" Value="Regular"/>
         <Setter Property="FontSize" Value="12"/>
-        <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="BorderBrush" Value="{StaticResource colour2}"/>
         <Setter Property="Background" Value="{StaticResource colour11}"/>
         <Setter Property="Foreground" Value="{StaticResource titleColour1}"/>
@@ -19,9 +16,10 @@
                             Background="{TemplateBinding Background}"
                             CornerRadius="2"
                             BorderThickness="1"
-                            BorderBrush="{TemplateBinding BorderBrush}">
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            Height="25">
                         <ScrollViewer Margin="0"
-                                      x:Name="PART_ContentHost" />
+                                      x:Name="PART_ContentHost" VerticalAlignment="Center"/>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
