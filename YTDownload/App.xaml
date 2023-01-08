@@ -13,6 +13,7 @@
                 <ResourceDictionary Source="Style/PathStyle.xaml"/>
                 <ResourceDictionary Source="Style/TextBoxStyle.xaml"/>
                 <ResourceDictionary Source="Style/TextBlockStyle.xaml"/>
+                <ResourceDictionary Source="Style/ScrollViewStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
