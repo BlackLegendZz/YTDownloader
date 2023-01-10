@@ -15,7 +15,7 @@
         <Setter Property="FontWeight" Value="Regular"/>
         <Setter Property="FontSize" Value="12"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="Padding" Value="2,0,5,0"/>
+        <Setter Property="Padding" Value="5,0,5,0"/>
     </Style>
 
     <!--TextBlock Title text-->
@@ -25,6 +25,6 @@
         <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="FontSize" Value="15"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="Padding" Value="2,0,5,10"/>
+        <Setter Property="Padding" Value="5,0,5,10"/>
     </Style>
 </ResourceDictionary>
