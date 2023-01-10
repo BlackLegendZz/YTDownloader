@@ -21,6 +21,8 @@ namespace YTDownload.ViewModel
         ObservableCollection<YTElementModel> videoCollection = new ObservableCollection<YTElementModel>();
         [ObservableProperty]
         Visibility metadataWindowVisibile = Visibility.Collapsed;
+        [ObservableProperty]
+        bool canAddYTVideo = true;
 
         // All metadata fields
         [ObservableProperty]
@@ -41,29 +43,11 @@ namespace YTDownload.ViewModel
         [RelayCommand]
         async Task FetchVideo()
         {
-            if (videoList.ContainsKey(url))
+            CanAddYTVideo = false;
+            IEnumerable<YouTubeVideo> videoInfos = await TryFetchVideo();
+            if(!videoInfos.Any())
             {
-                StatusMessage = "The video was already added!";
-                return;
-            }
-            StatusMessage = $"Collecting information about {Url}";
-            IEnumerable<YouTubeVideo> videoInfos;
-            try
-            {
-                videoInfos = await youTube.GetAllVideosAsync(Url);
-            } 
-            catch(Exception ex)
-            {
-                StatusMessage = $"Error occured during processing: {ex.Message}";
-                return;
-            }
-            try
-            {
-                videoInfos.Count(); //Doing anything with a bad stream will throw an error so lets just check the count.
-            }
-            catch (Exception)
-            {
-                StatusMessage = "No video has been found.";
+                CanAddYTVideo = true;
                 return;
             }
 
@@ -109,6 +93,41 @@ namespace YTDownload.ViewModel
             videoList.Add(Url, YTEM);
             StatusMessage = "";
             Url = "";
+
+
+            CanAddYTVideo = true;
+        }
+
+        async Task<IEnumerable<YouTubeVideo>> TryFetchVideo()
+        {
+            IEnumerable<YouTubeVideo> videoInfos = new List<YouTubeVideo>();
+            if (videoList.ContainsKey(url))
+            {
+                StatusMessage = "The video was already added!";
+                return videoInfos;
+            }
+            CanAddYTVideo = false;
+            StatusMessage = $"Collecting information about {Url}";
+            try
+            {
+                videoInfos = await youTube.GetAllVideosAsync(Url);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Error occured during processing: {ex.Message}";
+                return videoInfos;
+            }
+            try
+            {
+                videoInfos.Count(); //Doing anything with a bad stream will throw an error so lets just check the count.
+            }
+            catch (Exception)
+            {
+                StatusMessage = "No video has been found.";
+                return videoInfos;
+            }
+
+            return videoInfos;
         }
 
         [RelayCommand]

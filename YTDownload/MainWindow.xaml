@@ -37,9 +37,10 @@
         
         <Grid Margin="2">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="45"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/> <!-- Window control -->
+                <RowDefinition Height="45"/> <!-- Search bar -->
+                <RowDefinition Height="*"/> <!-- Main window elements -->
+                <RowDefinition Height="Auto"/> <!-- Status messages -->
             </Grid.RowDefinitions>
             
             <!-- Window Control -->
@@ -82,11 +83,13 @@
                          Margin="5"
                          Text="{Binding Url}"
                          Style="{StaticResource NormalTextBoxStyle}"
-                         Height="30"/>
+                         Height="30"
+                         IsEnabled="{Binding CanAddYTVideo}"/>
                 <Button Grid.Column="2"
                         Content="Add Video"
                         Style="{StaticResource NormalButtonStyle}"
-                        Command="{Binding FetchVideoCommand}"/>
+                        Command="{Binding FetchVideoCommand}"
+                        IsEnabled="{Binding CanAddYTVideo}"/>
             </Grid>
 
             <!-- Main window -->
@@ -97,78 +100,80 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Video list section -->
-                <Grid Grid.Column="0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <ScrollViewer Grid.Row="0"
-                                  VerticalScrollBarVisibility="Auto"
-                                  HorizontalScrollBarVisibility="Disabled">
-                        <ItemsControl ItemsSource="{Binding VideoCollection}"
-                                      ItemTemplate="{StaticResource ResourceKey=YTVideoElement}">
-                        </ItemsControl>
-                    </ScrollViewer>
-                    <TextBlock Grid.Row="1" 
-                               Text="{Binding StatusMessage}"
-                               Style="{StaticResource TextBlockRegular}"/>
-                </Grid>
+                <ScrollViewer Grid.Column="0"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding VideoCollection}"
+                                  ItemTemplate="{StaticResource ResourceKey=YTVideoElement}">
+                    </ItemsControl>
+                </ScrollViewer>
+
 
                 <!-- Metadata section -->
-                <StackPanel Grid.Column="1"
-                            Visibility="{Binding MetadataWindowVisibile}">
-                    <TextBlock Text="Metadata"
+                <Border Grid.Column="1"
+                        BorderThickness="1.5,0,0,0"
+                        BorderBrush="{StaticResource colour11}"
+                        Visibility="{Binding MetadataWindowVisibile}">
+                    <StackPanel>
+                        <TextBlock Text="Metadata"
                                Style="{StaticResource TextBlockTitle}"/>
-                    <Grid Width="300">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                        <Grid Width="300">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0"
-                                   Text="Title"
-                                   Style="{StaticResource TextBlockRegular}"/>
-                        <TextBox Grid.Row="0" Grid.Column="1"
-                                 Text="{Binding MetadataTitle}"
-                                 Style="{StaticResource NormalTextBoxStyle}"/>
+                            <TextBlock Grid.Row="0" Grid.Column="0"
+                                       Text="Title"
+                                       Style="{StaticResource TextBlockRegular}"/>
+                            <TextBox Grid.Row="0" Grid.Column="1"
+                                     Text="{Binding MetadataTitle}"
+                                     Style="{StaticResource NormalTextBoxStyle}"/>
 
-                        <TextBlock Grid.Row="1" Grid.Column="0"
-                                   Text="Album"
-                                   Style="{StaticResource TextBlockRegular}"/>
-                        <TextBox Grid.Row="1" Grid.Column="1"
-                                 Text="{Binding MetadataAlbum}"
-                                 Style="{StaticResource NormalTextBoxStyle}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0"
+                                       Text="Album"
+                                       Style="{StaticResource TextBlockRegular}"/>
+                            <TextBox Grid.Row="1" Grid.Column="1"
+                                     Text="{Binding MetadataAlbum}"
+                                     Style="{StaticResource NormalTextBoxStyle}"/>
 
-                        <TextBlock Grid.Row="2" Grid.Column="0"
-                                   Text="Interpreter"
-                                   Style="{StaticResource TextBlockRegular}"/>
-                        <TextBox Grid.Row="2" Grid.Column="1"
-                                 Text="{Binding MetadataInterpreter}"
-                                 Style="{StaticResource NormalTextBoxStyle}"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0"
+                                       Text="Interpreter"
+                                       Style="{StaticResource TextBlockRegular}"/>
+                            <TextBox Grid.Row="2" Grid.Column="1"
+                                     Text="{Binding MetadataInterpreter}"
+                                     Style="{StaticResource NormalTextBoxStyle}"/>
 
-                        <TextBlock Grid.Row="3" Grid.Column="0"
-                                   Text="Year"
-                                   Style="{StaticResource TextBlockRegular}"/>
-                        <TextBox Grid.Row="3" Grid.Column="1"
-                                 Text="{Binding MetadataYear}"
-                                 Style="{StaticResource NormalTextBoxStyle}"/>
+                            <TextBlock Grid.Row="3" Grid.Column="0"
+                                       Text="Year"
+                                       Style="{StaticResource TextBlockRegular}"/>
+                            <TextBox Grid.Row="3" Grid.Column="1"
+                                     Text="{Binding MetadataYear}"
+                                     Style="{StaticResource NormalTextBoxStyle}"/>
 
-                        <TextBlock Grid.Row="4" Grid.Column="0"
-                                   Text="Tracknumber"
-                                   Style="{StaticResource TextBlockRegular}"/>
-                        <TextBox Grid.Row="4" Grid.Column="1"
-                                 Text="{Binding MetadataTracknumber}"
-                                 Style="{StaticResource NormalTextBoxStyle}"/>
-                    </Grid>
-                </StackPanel>
+                            <TextBlock Grid.Row="4" Grid.Column="0"
+                                       Text="Tracknumber"
+                                       Style="{StaticResource TextBlockRegular}"/>
+                            <TextBox Grid.Row="4" Grid.Column="1"
+                                     Text="{Binding MetadataTracknumber}"
+                                     Style="{StaticResource NormalTextBoxStyle}"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+                
             </Grid>
+
+            <!-- Status messages -->
+            <TextBlock Grid.Row="3" 
+                       Text="{Binding StatusMessage}"
+                       Style="{StaticResource TextBlockRegular}"/>
         </Grid>
     </Border>
     
