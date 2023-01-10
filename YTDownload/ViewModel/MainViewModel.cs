@@ -88,6 +88,19 @@ namespace YTDownload.ViewModel
             YTEM.RemoveVideoCommand = RemoveVideoCommand;
             YTEM.Videos = vidArr;
 
+            YTEM.MetadataTracknumber = "1";
+            YTEM.MetadataYear = DateTime.Now.Year.ToString();
+            string[] titleSplits = YTEM.Title.Split(" - ");
+            if(titleSplits.Length == 1)
+            {
+                YTEM.MetadataTitle = YTEM.Title;
+                YTEM.MetadataInterpreter = YTEM.Author.Replace(" - Topic", "");
+            }
+            else
+            {
+                YTEM.MetadataTitle = titleSplits[1];
+                YTEM.MetadataInterpreter = titleSplits[0];
+            }
 
             videoCollection.Add(YTEM);
             videoList.Add(Url, YTEM);
@@ -133,13 +146,24 @@ namespace YTDownload.ViewModel
         [RelayCommand]
         void RemoveVideo(object parameter)
         {
-            GetSelectedVideo(parameter);
-
+            YTElementModel videoToDelete = GetSelectedVideo(parameter);
+            bool isSelectedElement = videoToDelete.Equals(selectedYTEM);
             string? btnUrl = parameter.ToString();
+            
             if (btnUrl != null)
             {
                 videoList.Remove(btnUrl);
-                videoCollection.Remove(selectedYTEM);
+                videoCollection.Remove(videoToDelete);
+            }
+
+            if (isSelectedElement)
+            {
+                MetadataTitle = "";
+                MetadataAlbum = "";
+                MetadataInterpreter = "";
+                MetadataYear = "";
+                MetadataTracknumber = "";
+                MetadataWindowVisibile = Visibility.Collapsed;
             }
         }
 
@@ -157,12 +181,16 @@ namespace YTDownload.ViewModel
                 selectedYTEM.MetadataTracknumber= MetadataTracknumber;
             }
             MetadataWindowVisibile = Visibility.Visible;
-            GetSelectedVideo(parameter);
-            if (selectedYTEM == null)
+
+            try
+            {
+                selectedYTEM = GetSelectedVideo(parameter);
+            }catch(ArgumentNullException)
             {
                 StatusMessage = "Oops! Cant Edit Metadata";
                 return;
             }
+
             MetadataTitle = selectedYTEM.MetadataTitle;
             MetadataAlbum = selectedYTEM.MetadataAlbum;
             MetadataInterpreter = selectedYTEM.MetadataInterpreter;
@@ -170,14 +198,20 @@ namespace YTDownload.ViewModel
             MetadataTracknumber = selectedYTEM.MetadataTracknumber;
         }
 
-        void GetSelectedVideo(object parameter)
+        YTElementModel GetSelectedVideo(object parameter)
         {
             string? btnUrl = parameter.ToString();
 
+            YTElementModel? YTEM = new YTElementModel();
             if (btnUrl != null)
             {
-                _ = videoList.TryGetValue(btnUrl, out selectedYTEM);
+                _ = videoList.TryGetValue(btnUrl, out YTEM);
             }
+            if (YTEM == null)
+            {
+                throw new ArgumentNullException("Failed getting currently selected video.");
+            }
+            return YTEM;
         }
     }
 }
