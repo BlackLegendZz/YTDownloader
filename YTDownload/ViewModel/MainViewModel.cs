@@ -36,9 +36,9 @@ namespace YTDownload.ViewModel
         [ObservableProperty]
         string metadataTracknumber = "";
 
-        Dictionary<string, YTElementModel> videoList = new Dictionary<string, YTElementModel>();
-        YouTube youTube = YouTube.Default;
-        YTElementModel selectedYTEM = new YTElementModel();
+        private Dictionary<string, YTElementModel> videoList = new Dictionary<string, YTElementModel>();
+        private YouTube youTube = YouTube.Default;
+        private YTElementModel selectedYTEM = new YTElementModel();
 
         [RelayCommand]
         async Task FetchVideo()
@@ -132,7 +132,7 @@ namespace YTDownload.ViewModel
             }
             try
             {
-                videoInfos.Count(); //Doing anything with a bad stream will throw an error so lets just check the count.
+                _ = videoInfos.Count(); //Doing anything with a bad stream will throw an error so lets just check the count.
             }
             catch (Exception)
             {
@@ -185,7 +185,7 @@ namespace YTDownload.ViewModel
             try
             {
                 selectedYTEM = GetSelectedVideo(parameter);
-            }catch(ArgumentNullException)
+            }catch(Exception)
             {
                 StatusMessage = "Oops! Cant Edit Metadata";
                 return;
@@ -209,7 +209,7 @@ namespace YTDownload.ViewModel
             }
             if (YTEM == null)
             {
-                throw new ArgumentNullException("Failed getting currently selected video.");
+                throw new Exception("Failed getting currently selected video.");
             }
             return YTEM;
         }
