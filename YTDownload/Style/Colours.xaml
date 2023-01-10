@@ -32,4 +32,7 @@
     <SolidColorBrush x:Key="panelColour" Color="#200F53"/>
     <SolidColorBrush x:Key="panelOverColour" Color="#281269"/>
     <SolidColorBrush x:Key="panelActiveColour" Color="#2B1372"/>
+
+
+    <Color x:Key="disabledBGColour">#9497CD</Color>
 </ResourceDictionary>
