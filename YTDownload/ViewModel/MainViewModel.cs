@@ -153,6 +153,17 @@ namespace YTDownload.ViewModel
         [RelayCommand]
         async Task DownloadAll()
         {
+            // Save previous changes in the ElementModel-Class before
+            // loading in the values of the newly selected one.
+            if (selectedYTEM != null)
+            {
+                selectedYTEM.MetadataTitle = MetadataTitle;
+                selectedYTEM.MetadataAlbum = MetadataAlbum;
+                selectedYTEM.MetadataInterpreter = MetadataInterpreter;
+                selectedYTEM.MetadataYear = MetadataYear;
+                selectedYTEM.MetadataTracknumber = MetadataTracknumber;
+            }
+
             string folderPath = "";
             FolderBrowserDialog openFileDlg = new FolderBrowserDialog();
             var result = openFileDlg.ShowDialog();
@@ -164,7 +175,7 @@ namespace YTDownload.ViewModel
             int count = 1;
             foreach(YTElement YTEM in videoList.Values)
             {
-                string filename = Utils.SanitizeFileName($"{YTEM.Author} - {YTEM.Title}.{YTEM.Stream.Container.Name}");
+                string filename = Utils.SanitizeFileName($"{YTEM.MetadataInterpreter} - {YTEM.MetadataTitle}.{YTEM.Stream.Container.Name}");
                 string filePath = Path.Combine(folderPath, filename);
 
                 // Set up progress reporting
@@ -176,7 +187,5 @@ namespace YTDownload.ViewModel
             }
             StatusMessage = "";
         }
-
-        
     }
 }

@@ -38,17 +38,16 @@ namespace YTDownload
 
         public async Task DownloadFfmpeg()
         {
-            string localAppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Simple YTDownloader");
+            
             string ffmpegUrl = "https://github.com/ffbinaries/ffbinaries-prebuilt/releases/download/v4.4.1/ffmpeg-4.4.1-win-64.zip";
-            string ffmpegZip = Path.Combine(localAppDataPath, "ffmpeg.zip");
-            string ffmpegExe = Path.Combine(localAppDataPath, "ffmpeg", "ffmpeg.exe");
+            string ffmpegZip = Path.Combine(App.localAppDataPath, "ffmpeg.zip");
 
-            if (!Directory.Exists(localAppDataPath))
+            if (!Directory.Exists(App.localAppDataPath))
             {
-                Directory.CreateDirectory(localAppDataPath);
+                Directory.CreateDirectory(App.localAppDataPath);
             }
 
-            if (!File.Exists(ffmpegExe))
+            if (!File.Exists(App.ffmpegExe))
             {
                 HttpClient client = new HttpClient();
                 HttpResponseMessage response = await client.GetAsync(ffmpegUrl);
@@ -59,7 +58,7 @@ namespace YTDownload
                     await response.Content.CopyToAsync(fs);
                 }
 
-                ZipFile.ExtractToDirectory(ffmpegZip, Path.Combine(localAppDataPath, "ffmpeg"));
+                ZipFile.ExtractToDirectory(ffmpegZip, Path.Combine(App.localAppDataPath, "ffmpeg"));
                 File.Delete(ffmpegZip);
             }
         }
