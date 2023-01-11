@@ -43,7 +43,28 @@
                 <RowDefinition Height="*"/> <!-- Main window elements -->
                 <RowDefinition Height="Auto"/> <!-- Status messages -->
             </Grid.RowDefinitions>
+
+            <!-- 
+            This part should only show once, when the user opens
+            the app for the first time and ffmpeg gets downloaded.
+            Temporarely it replaces the main content column, having the
+            yt-url column disabled at the same time.
             
+            This isnt very mvvm but idfk how to do this otherwise.
+            -->
+            <StackPanel Grid.Row="2" 
+                        Orientation="Vertical"
+                        Width="400"
+                        VerticalAlignment="Center"
+                        x:Name="StackPanelFfmpegInfo"
+                        Visibility="Collapsed">
+                <TextBlock Text="Downloading important files. This text should only appear once. Please wait a bit."
+                           Style="{StaticResource TextBlockTitle}"
+                           HorizontalAlignment="Center"
+                           TextWrapping="Wrap"/>
+                <ProgressBar IsIndeterminate="True"
+                             Height="10"/>
+            </StackPanel>
             <!-- Window Control -->
             <StackPanel Grid.Row="0"
                         Orientation="Horizontal"
@@ -69,7 +90,8 @@
             </StackPanel>
             
             <!-- Adding YT urls -->
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="1"
+                  x:Name="GridYTUrl">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
@@ -94,7 +116,8 @@
             </Grid>
 
             <!-- Main window -->
-            <Grid Grid.Row="2">
+            <Grid Grid.Row="2"
+                  x:Name="GridMainContent">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>

@@ -1,5 +1,9 @@
 ﻿using System;
+using System.IO.Compression;
+using System.IO;
+using System.Net.Http;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -16,6 +20,48 @@ namespace YTDownload
             InitializeComponent();
             MaxHeight = SystemParameters.MaximizedPrimaryScreenHeight;
             MaxWidth = SystemParameters.MaximizedPrimaryScreenWidth;
+            Loaded += MainWindow_Loaded;
+        }
+
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            GridMainContent.Visibility = Visibility.Collapsed;
+            GridYTUrl.Visibility = Visibility.Collapsed;
+            StackPanelFfmpegInfo.Visibility = Visibility.Visible;
+
+            await DownloadFfmpeg();
+
+            StackPanelFfmpegInfo.Visibility = Visibility.Collapsed;
+            GridYTUrl.Visibility = Visibility.Visible;
+            GridMainContent.Visibility = Visibility.Visible;
+        }
+
+        public async Task DownloadFfmpeg()
+        {
+            string localAppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Simple YTDownloader");
+            string ffmpegUrl = "https://github.com/ffbinaries/ffbinaries-prebuilt/releases/download/v4.4.1/ffmpeg-4.4.1-win-64.zip";
+            string ffmpegZip = Path.Combine(localAppDataPath, "ffmpeg.zip");
+            string ffmpegExe = Path.Combine(localAppDataPath, "ffmpeg", "ffmpeg.exe");
+
+            if (!Directory.Exists(localAppDataPath))
+            {
+                Directory.CreateDirectory(localAppDataPath);
+            }
+
+            if (!File.Exists(ffmpegExe))
+            {
+                HttpClient client = new HttpClient();
+                HttpResponseMessage response = await client.GetAsync(ffmpegUrl);
+                response.EnsureSuccessStatusCode();
+
+                using (var fs = new FileStream(ffmpegZip, FileMode.Create))
+                {
+                    await response.Content.CopyToAsync(fs);
+                }
+
+                ZipFile.ExtractToDirectory(ffmpegZip, Path.Combine(localAppDataPath, "ffmpeg"));
+                File.Delete(ffmpegZip);
+            }
         }
 
         private void ToggleMaximize()
