@@ -7,18 +7,15 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <RadioButton Grid.Column="0" 
-                         Command="{Binding EditMetadataCommand}"
-                         CommandParameter="{Binding Url}"
+                         Command="{Binding DataContext.EditMetadataCommand, ElementName=Root}"
+                         CommandParameter="{Binding StreamUrl}"
                          HorizontalContentAlignment="Left"
                          Style="{StaticResource YTButton}"
                          GroupName="ytelem">
                 <StackPanel Orientation="Horizontal"
                             Margin="5">
-                    <Border BorderBrush="Black"
-                            BorderThickness="5"
-                            Width="55"
-                            Height="55" 
-                            Margin="0,0,10,0"/>
+                    <Image Height="55" Source="{Binding ThumbnailUrl}" 
+                           Margin="5,0,5,0"/>
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -47,8 +44,8 @@
             <Button Grid.Column="1"
                     Style="{StaticResource DeleteButtonStyle}"
                     Height="Auto"
-                    Command="{Binding RemoveVideoCommand}"
-                    CommandParameter="{Binding Url}"
+                    Command="{Binding DataContext.RemoveVideoCommand, ElementName=Root}"
+                    CommandParameter="{Binding StreamUrl}"
                     HorizontalContentAlignment="Left"
                     Tag="{StaticResource colour1}">
                 <Path Data="{StaticResource IconDelete}" Style="{StaticResource WindowControlIconStyle}"/>
