@@ -1,7 +1,4 @@
-﻿using System;
-using VideoLibrary;
-
-namespace YTDownload.Model
+﻿namespace YTDownload.Model
 {
     public sealed class YTElementModel
     {
@@ -11,6 +8,7 @@ namespace YTDownload.Model
         public string Url { get; set; } = "";
         public object? EditMetadataCommand { get; set; } = null;
         public object? RemoveVideoCommand { get; set; } = null;
+        public float DownloadProgress { get; set; } = 0.0f;
 
         public string MetadataTitle { get; set; } = "";
         public string MetadataAlbum { get; set; } = "";
@@ -18,7 +16,6 @@ namespace YTDownload.Model
         public string MetadataYear { get; set; } = "";
         public string MetadataTracknumber { get; set; } = "";
 
-        public YouTubeVideo[] Videos { get; set; } = Array.Empty<YouTubeVideo>();
         public YTElementModel() { }
     }
 }
