@@ -6,7 +6,10 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using VideoLibrary;
+using YoutubeExplode;
+using YoutubeExplode.Common;
+using YoutubeExplode.Videos;
+using YoutubeExplode.Videos.Streams;
 using YTDownload.Model;
 
 namespace YTDownload.ViewModel
@@ -23,6 +26,8 @@ namespace YTDownload.ViewModel
         Visibility metadataWindowVisibile = Visibility.Collapsed;
         [ObservableProperty]
         bool canAddYTVideo = true;
+        [ObservableProperty]
+        bool canDownload = false;
 
         // All metadata fields
         [ObservableProperty]
@@ -36,57 +41,37 @@ namespace YTDownload.ViewModel
         [ObservableProperty]
         string metadataTracknumber = "";
 
+        private readonly YoutubeClient _youtube = new();
         private Dictionary<string, YTElementModel> videoList = new Dictionary<string, YTElementModel>();
-        private YouTube youTube = YouTube.Default;
         private YTElementModel selectedYTEM = new YTElementModel();
 
         [RelayCommand]
         async Task FetchVideo()
         {
             CanAddYTVideo = false;
-            IEnumerable<YouTubeVideo> videoInfos = await TryFetchVideo();
-            if(!videoInfos.Any())
-            {
-                CanAddYTVideo = true;
-                return;
-            }
+            Video video = await _youtube.Videos.GetAsync(Url);
+            Thumbnail videoThumbnail = video.Thumbnails.GetWithHighestResolution();
 
-            //Get video objects with the best audio and video quality
-            YouTubeVideo videoBestAudio = videoInfos.First();
-            YouTubeVideo videoBestVideo = videoInfos.First();
-            int bestAudioBitrate = 0;
-            int bestVideoResolution = 0;
-            foreach (YouTubeVideo video in videoInfos)
-            {
-                if (video.AudioBitrate > bestAudioBitrate)
-                {
-                    bestAudioBitrate = video.AudioBitrate;
-                    videoBestAudio = video;
-                }
-                if (video.Resolution > bestVideoResolution)
-                {
-                    bestVideoResolution = video.Resolution;
-                    videoBestVideo = video;
-                }
-            }
+            StreamManifest streamManifest = await _youtube.Videos.Streams.GetManifestAsync(Url);
+            IStreamInfo[] streams = streamManifest
+                .Streams
+                .OrderByDescending(s => s.Bitrate)
+                .ToArray();
 
-            YouTubeVideo[] vidArr = { videoBestAudio, videoBestVideo };
-
+            IStreamInfo bestAudioStream = streams[0];
             YTElementModel YTEM = new YTElementModel();
-            YTEM.Title = videoBestVideo.Title;
-            YTEM.Author = videoBestVideo.Info.Author;
-            if (videoBestVideo.Info.LengthSeconds != null)
+            YTEM.Title = video.Title;
+            YTEM.Author = video.Author.ChannelTitle;
+
+            if (video.Duration != null)
             {
-                int length = (int)videoBestVideo.Info.LengthSeconds;
-                int hours = length / 3600;
-                int minutes = length / 60 - hours * 60;
-                int seconds = length % 60;
-                YTEM.Length = hours.ToString().PadLeft(2, '0') + ':' + minutes.ToString().PadLeft(2, '0') + ':' + seconds.ToString().PadLeft(2, '0');
+                TimeSpan length = (TimeSpan)video.Duration;
+                YTEM.Length = length.Hours.ToString().PadLeft(2, '0') 
+                    + ':' + length.Minutes.ToString().PadLeft(2, '0') 
+                    + ':' + length.Seconds.ToString().PadLeft(2, '0');
             }
-            YTEM.Url = Url;
-            YTEM.EditMetadataCommand = EditMetadataCommand;
-            YTEM.RemoveVideoCommand = RemoveVideoCommand;
-            YTEM.Videos = vidArr;
+            YTEM.StreamUrl = bestAudioStream.Url;
+            YTEM.ThumbnailUrl = videoThumbnail.Url;
 
             YTEM.MetadataTracknumber = "1";
             YTEM.MetadataYear = DateTime.Now.Year.ToString();
@@ -103,44 +88,16 @@ namespace YTDownload.ViewModel
             }
 
             videoCollection.Add(YTEM);
-            videoList.Add(Url, YTEM);
+            videoList.Add(YTEM.StreamUrl, YTEM);
             StatusMessage = "";
             Url = "";
 
 
             CanAddYTVideo = true;
-        }
-
-        async Task<IEnumerable<YouTubeVideo>> TryFetchVideo()
-        {
-            IEnumerable<YouTubeVideo> videoInfos = new List<YouTubeVideo>();
-            if (videoList.ContainsKey(url))
+            if (!CanDownload)
             {
-                StatusMessage = "The video was already added!";
-                return videoInfos;
+                CanDownload= true;
             }
-            CanAddYTVideo = false;
-            StatusMessage = $"Collecting information about {Url}";
-            try
-            {
-                videoInfos = await youTube.GetAllVideosAsync(Url);
-            }
-            catch (Exception ex)
-            {
-                StatusMessage = $"Error occured during processing: {ex.Message}";
-                return videoInfos;
-            }
-            try
-            {
-                _ = videoInfos.Count(); //Doing anything with a bad stream will throw an error so lets just check the count.
-            }
-            catch (Exception)
-            {
-                StatusMessage = "No video has been found.";
-                return videoInfos;
-            }
-
-            return videoInfos;
         }
 
         [RelayCommand]
@@ -164,6 +121,10 @@ namespace YTDownload.ViewModel
                 MetadataYear = "";
                 MetadataTracknumber = "";
                 MetadataWindowVisibile = Visibility.Collapsed;
+            }
+            if(videoCollection.Count == 0)
+            {
+                CanDownload = false;
             }
         }
 
@@ -212,6 +173,12 @@ namespace YTDownload.ViewModel
                 throw new Exception("Failed getting currently selected video.");
             }
             return YTEM;
+        }
+
+        [RelayCommand]
+        async Task DownloadAll()
+        {
+
         }
     }
 }
