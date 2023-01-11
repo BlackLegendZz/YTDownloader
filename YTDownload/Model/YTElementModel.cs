@@ -5,9 +5,8 @@
         public string Title { get; set; } = "";
         public string Author { get; set; } = "";
         public string Length { get; set; } = "";
-        public string Url { get; set; } = "";
-        public object? EditMetadataCommand { get; set; } = null;
-        public object? RemoveVideoCommand { get; set; } = null;
+        public string StreamUrl { get; set; } = "";
+        public string ThumbnailUrl { get; set; } = "";
         public float DownloadProgress { get; set; } = 0.0f;
 
         public string MetadataTitle { get; set; } = "";
