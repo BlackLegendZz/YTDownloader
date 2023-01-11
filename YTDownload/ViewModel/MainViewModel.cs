@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 using YoutubeExplode;
 using YoutubeExplode.Common;
 using YoutubeExplode.Videos;
@@ -22,7 +23,7 @@ namespace YTDownload.ViewModel
         [ObservableProperty]
         string statusMessage = "";
         [ObservableProperty]
-        ObservableCollection<YTElementModel> videoCollection = new ObservableCollection<YTElementModel>();
+        ObservableCollection<YTElement> videoCollection = new ObservableCollection<YTElement>();
         [ObservableProperty]
         Visibility metadataWindowVisibile = Visibility.Collapsed;
         [ObservableProperty]
@@ -43,8 +44,8 @@ namespace YTDownload.ViewModel
         string metadataTracknumber = "";
 
         private readonly YoutubeClient _youtube = new();
-        private Dictionary<string, YTElementModel> videoList = new Dictionary<string, YTElementModel>();
-        private YTElementModel? selectedYTEM = null;
+        private Dictionary<string, YTElement> videoList = new Dictionary<string, YTElement>();
+        private YTElement? selectedYTEM = null;
 
         [RelayCommand]
         async Task FetchVideo()
@@ -60,7 +61,7 @@ namespace YTDownload.ViewModel
                 .ToArray();
 
             IStreamInfo bestAudioStream = streams[0];
-            YTElementModel YTEM = new YTElementModel(bestAudioStream, video, videoThumbnail.Url);
+            YTElement YTEM = new YTElement(bestAudioStream, video, videoThumbnail.Url);
 
             videoCollection.Add(YTEM);
             videoList.Add(YTEM.StreamUrl, YTEM);
@@ -77,7 +78,7 @@ namespace YTDownload.ViewModel
         [RelayCommand]
         void RemoveVideo(object parameter)
         {
-            YTElementModel videoToDelete = GetSelectedVideo(parameter);
+            YTElement videoToDelete = GetSelectedVideo(parameter);
             bool isSelectedElement = videoToDelete.Equals(selectedYTEM);
             string? btnUrl = parameter.ToString();
             
@@ -133,11 +134,11 @@ namespace YTDownload.ViewModel
             MetadataTracknumber = selectedYTEM.MetadataTracknumber;
         }
 
-        YTElementModel GetSelectedVideo(object parameter)
+        YTElement GetSelectedVideo(object parameter)
         {
             string? btnUrl = parameter.ToString();
 
-            YTElementModel? YTEM = null;
+            YTElement? YTEM = null;
             if (btnUrl != null)
             {
                 _ = videoList.TryGetValue(btnUrl, out YTEM);
@@ -152,19 +153,30 @@ namespace YTDownload.ViewModel
         [RelayCommand]
         async Task DownloadAll()
         {
+            string folderPath = "";
+            FolderBrowserDialog openFileDlg = new FolderBrowserDialog();
+            var result = openFileDlg.ShowDialog();
+            if (result.ToString() != string.Empty)
+            {
+                folderPath = openFileDlg.SelectedPath;
+            }
+
             int count = 1;
-            foreach(YTElementModel YTEM in videoList.Values)
+            foreach(YTElement YTEM in videoList.Values)
             {
                 string filename = Utils.SanitizeFileName($"{YTEM.Author} - {YTEM.Title}.{YTEM.Stream.Container.Name}");
-                string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), filename);
+                string filePath = Path.Combine(folderPath, filename);
 
                 // Set up progress reporting
                 var progressHandler = new Progress<double>(p => StatusMessage = $"Downloading {count}/{videoList.Count}... {Math.Round(p*100,2)}%");
 
                 await _youtube.Videos.Streams.DownloadAsync(YTEM.Stream, filePath, progressHandler);
+                YTEM.IsFinishedDownloading = true;
                 count++;
             }
             StatusMessage = "";
         }
+
+        
     }
 }

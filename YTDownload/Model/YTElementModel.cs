@@ -4,22 +4,23 @@ using YoutubeExplode.Videos.Streams;
 
 namespace YTDownload.Model
 {
-    public sealed class YTElementModel
+    public sealed class YTElement
     {
         public string Title { get; }
         public string Author { get; }
         public string Length { get; } = "00:00:00";
         public string StreamUrl { get; }
         public string ThumbnailUrl { get; }
-        public double DownloadProgress { get; set; } = 0;
         public IStreamInfo Stream { get; }
+        public bool IsFinishedDownloading { get; set; } = false;
+
         public string MetadataTitle { get; set; }
         public string MetadataAlbum { get; set; }
         public string MetadataInterpreter { get; set; }
         public string MetadataYear { get; set; }
         public string MetadataTracknumber { get; set; }
 
-        public YTElementModel(IStreamInfo stream, Video video, string thumbnailUrl)
+        public YTElement(IStreamInfo stream, Video video, string thumbnailUrl)
         {
             Stream = stream;
             Title = video.Title;
