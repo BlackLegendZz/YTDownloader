@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -43,7 +44,7 @@ namespace YTDownload.ViewModel
 
         private readonly YoutubeClient _youtube = new();
         private Dictionary<string, YTElementModel> videoList = new Dictionary<string, YTElementModel>();
-        private YTElementModel selectedYTEM = new YTElementModel();
+        private YTElementModel? selectedYTEM = null;
 
         [RelayCommand]
         async Task FetchVideo()
@@ -54,44 +55,17 @@ namespace YTDownload.ViewModel
 
             StreamManifest streamManifest = await _youtube.Videos.Streams.GetManifestAsync(Url);
             IStreamInfo[] streams = streamManifest
-                .Streams
+                .GetAudioStreams()
                 .OrderByDescending(s => s.Bitrate)
                 .ToArray();
 
             IStreamInfo bestAudioStream = streams[0];
-            YTElementModel YTEM = new YTElementModel();
-            YTEM.Title = video.Title;
-            YTEM.Author = video.Author.ChannelTitle;
-
-            if (video.Duration != null)
-            {
-                TimeSpan length = (TimeSpan)video.Duration;
-                YTEM.Length = length.Hours.ToString().PadLeft(2, '0') 
-                    + ':' + length.Minutes.ToString().PadLeft(2, '0') 
-                    + ':' + length.Seconds.ToString().PadLeft(2, '0');
-            }
-            YTEM.StreamUrl = bestAudioStream.Url;
-            YTEM.ThumbnailUrl = videoThumbnail.Url;
-
-            YTEM.MetadataTracknumber = "1";
-            YTEM.MetadataYear = DateTime.Now.Year.ToString();
-            string[] titleSplits = YTEM.Title.Split(" - ");
-            if(titleSplits.Length == 1)
-            {
-                YTEM.MetadataTitle = YTEM.Title;
-                YTEM.MetadataInterpreter = YTEM.Author.Replace(" - Topic", "");
-            }
-            else
-            {
-                YTEM.MetadataTitle = titleSplits[1];
-                YTEM.MetadataInterpreter = titleSplits[0];
-            }
+            YTElementModel YTEM = new YTElementModel(bestAudioStream, video, videoThumbnail.Url);
 
             videoCollection.Add(YTEM);
             videoList.Add(YTEM.StreamUrl, YTEM);
             StatusMessage = "";
             Url = "";
-
 
             CanAddYTVideo = true;
             if (!CanDownload)
@@ -163,7 +137,7 @@ namespace YTDownload.ViewModel
         {
             string? btnUrl = parameter.ToString();
 
-            YTElementModel? YTEM = new YTElementModel();
+            YTElementModel? YTEM = null;
             if (btnUrl != null)
             {
                 _ = videoList.TryGetValue(btnUrl, out YTEM);
@@ -178,7 +152,19 @@ namespace YTDownload.ViewModel
         [RelayCommand]
         async Task DownloadAll()
         {
+            int count = 1;
+            foreach(YTElementModel YTEM in videoList.Values)
+            {
+                string filename = Utils.SanitizeFileName($"{YTEM.Author} - {YTEM.Title}.{YTEM.Stream.Container.Name}");
+                string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), filename);
 
+                // Set up progress reporting
+                var progressHandler = new Progress<double>(p => StatusMessage = $"Downloading {count}/{videoList.Count}... {Math.Round(p*100,2)}%");
+
+                await _youtube.Videos.Streams.DownloadAsync(YTEM.Stream, filePath, progressHandler);
+                count++;
+            }
+            StatusMessage = "";
         }
     }
 }

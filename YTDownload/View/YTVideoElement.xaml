@@ -37,7 +37,8 @@
                         <ProgressBar Grid.Row="2"
                                      Margin="0,2,0,2"
                                      Height="10"
-                                     Value="{Binding DownloadProgress}"/>
+                                     Value="{Binding DownloadProgress, Mode=OneWay}"
+                                     Visibility="Collapsed"/>
                     </Grid>
                 </StackPanel>
             </RadioButton>
