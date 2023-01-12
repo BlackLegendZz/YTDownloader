@@ -9,6 +9,7 @@
     <UseWindowsForms>True</UseWindowsForms>
     <StartupObject>YTDownload.App</StartupObject>
     <NeutralLanguage>en-001</NeutralLanguage>
+    <Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
