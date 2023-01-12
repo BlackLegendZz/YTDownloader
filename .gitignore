@@ -5,3 +5,9 @@
 /.vs
 /YTDownload/bin/Debug/net6.0-windows
 /YTDownload/obj
+/AppInstaller/AppPackages
+/AppInstaller/bin/x64/Release
+/AppInstaller/BundleArtifacts
+/AppInstaller/obj
+/AppInstaller/AppInstaller_TemporaryKey.pfx
+/YTDownload/bin/x64/Release/net6.0-windows
