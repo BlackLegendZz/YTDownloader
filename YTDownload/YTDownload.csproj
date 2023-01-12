@@ -10,6 +10,7 @@
     <StartupObject>YTDownload.App</StartupObject>
     <NeutralLanguage>en-001</NeutralLanguage>
     <Platforms>AnyCPU;x64;x86</Platforms>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +22,10 @@
     <None Remove="Styles\**" />
     <Page Remove="Assets\**" />
     <Page Remove="Styles\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
