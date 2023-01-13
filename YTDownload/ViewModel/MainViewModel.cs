@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
@@ -282,29 +281,15 @@ namespace YTDownload.ViewModel
             tagFile.Tag.Performers = new string[] { YTElem.MetadataInterpreter };
 
             //Get the YT thumbnail as the albumb cover
-            HttpClient client = new HttpClient();
             string thumbnailPath = Path.Combine(App.tempPath, "thumb" + Guid.NewGuid().ToString() + ".jpg");
-            try
+            await Utils.DownloadFileAsync(YTElem.ThumbnailUrl, thumbnailPath);
+            TagLib.IPicture pic = new TagLib.Picture(thumbnailPath);
+            tagFile.Tag.Pictures = new TagLib.IPicture[] { pic };
+            if (File.Exists(thumbnailPath))
             {
-                HttpResponseMessage response = await client.GetAsync(YTElem.ThumbnailUrl);
-                response.EnsureSuccessStatusCode();
-                using (var fs = new FileStream(thumbnailPath, FileMode.Create))
-                {
-                    await response.Content.CopyToAsync(fs);
-                }
+                File.Delete(thumbnailPath);
+            }
 
-                TagLib.IPicture pic = new TagLib.Picture(thumbnailPath);
-                tagFile.Tag.Pictures = new TagLib.IPicture[] { pic };
-            }
-            finally
-            {
-                client.Dispose();
-                if(File.Exists(thumbnailPath))
-                {
-                    File.Delete(thumbnailPath);
-                }
-            }
-            
             tagFile.Save();
         }
     }

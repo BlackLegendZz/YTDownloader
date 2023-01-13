@@ -63,30 +63,15 @@ namespace YTDownload
             }
 
             HttpClient client = new HttpClient();
-            try
+            for (int i = 0; i < ffmpegUrls.Length; i++)
             {
-                for (int i = 0; i < ffmpegUrls.Length; i++)
+                if (!File.Exists(Path.Combine(App.ffmpegPath, ffmpegExes[i])))
                 {
-                    if (!File.Exists(Path.Combine(App.ffmpegPath, ffmpegExes[i])))
-                    {
-                        HttpResponseMessage response = await client.GetAsync(ffmpegUrls[i]);
-                        response.EnsureSuccessStatusCode();
-
-                        using (var fs = new FileStream(ffmpegZips[i], FileMode.Create))
-                        {
-                            await response.Content.CopyToAsync(fs);
-                        }
-
-                        ZipFile.ExtractToDirectory(ffmpegZips[i], Path.Combine(App.ffmpegPath));
-                        File.Delete(ffmpegZips[i]);
-                    }
+                    await Utils.DownloadFileAsync(ffmpegUrls[i], ffmpegZips[i]);
+                    ZipFile.ExtractToDirectory(ffmpegZips[i], Path.Combine(App.ffmpegPath));
+                    File.Delete(ffmpegZips[i]);
                 }
             }
-            finally
-            {
-                client.Dispose();
-            }
-
         }
 
         private void ToggleMaximize()
