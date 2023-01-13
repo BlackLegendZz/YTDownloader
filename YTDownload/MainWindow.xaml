@@ -102,12 +102,13 @@
                        Margin="5"
                        Style="{StaticResource TextBlockRegular}"
                        Foreground="{StaticResource titleColour1}"/>
-                <TextBox Grid.Column="1"
+                <RibbonTextBox Grid.Column="1"
                          Margin="5"
-                         Text="{Binding Url}"
-                         Style="{StaticResource NormalTextBoxStyle}"
+                         Text="{Binding Url, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource NormalRibbonTextBoxStyle}"
                          Height="30"
-                         IsEnabled="{Binding CanAddYTVideo}"/>
+                         IsEnabled="{Binding CanAddYTVideo}"
+                               Command="{Binding FetchVideoCommand}"/>
                 <Button Grid.Column="2"
                         Content="Add Video"
                         Style="{StaticResource NormalButtonStyle}"
@@ -170,37 +171,37 @@
                             <TextBlock Grid.Row="0" Grid.Column="0"
                                        Text="Title"
                                        Style="{StaticResource TextBlockRegular}"/>
-                            <TextBox Grid.Row="0" Grid.Column="1"
+                            <RibbonTextBox Grid.Row="0" Grid.Column="1"
                                      Text="{Binding MetadataTitle}"
-                                     Style="{StaticResource NormalTextBoxStyle}"/>
+                                     Style="{StaticResource NormalRibbonTextBoxStyle}"/>
 
                             <TextBlock Grid.Row="1" Grid.Column="0"
                                        Text="Album"
                                        Style="{StaticResource TextBlockRegular}"/>
-                            <TextBox Grid.Row="1" Grid.Column="1"
+                            <RibbonTextBox Grid.Row="1" Grid.Column="1"
                                      Text="{Binding MetadataAlbum}"
-                                     Style="{StaticResource NormalTextBoxStyle}"/>
+                                     Style="{StaticResource NormalRibbonTextBoxStyle}"/>
 
                             <TextBlock Grid.Row="2" Grid.Column="0"
                                        Text="Interpreter"
                                        Style="{StaticResource TextBlockRegular}"/>
-                            <TextBox Grid.Row="2" Grid.Column="1"
+                            <RibbonTextBox Grid.Row="2" Grid.Column="1"
                                      Text="{Binding MetadataInterpreter}"
-                                     Style="{StaticResource NormalTextBoxStyle}"/>
+                                     Style="{StaticResource NormalRibbonTextBoxStyle}"/>
 
                             <TextBlock Grid.Row="3" Grid.Column="0"
                                        Text="Year"
                                        Style="{StaticResource TextBlockRegular}"/>
-                            <TextBox Grid.Row="3" Grid.Column="1"
+                            <RibbonTextBox Grid.Row="3" Grid.Column="1"
                                      Text="{Binding MetadataYear}"
-                                     Style="{StaticResource NormalTextBoxStyle}"/>
+                                     Style="{StaticResource NormalRibbonTextBoxStyle}"/>
 
                             <TextBlock Grid.Row="4" Grid.Column="0"
                                        Text="Tracknumber"
                                        Style="{StaticResource TextBlockRegular}"/>
-                            <TextBox Grid.Row="4" Grid.Column="1"
+                            <RibbonTextBox Grid.Row="4" Grid.Column="1"
                                      Text="{Binding MetadataTracknumber}"
-                                     Style="{StaticResource NormalTextBoxStyle}"/>
+                                     Style="{StaticResource NormalRibbonTextBoxStyle}"/>
                         </Grid>
                     </StackPanel>
                 </Border>
