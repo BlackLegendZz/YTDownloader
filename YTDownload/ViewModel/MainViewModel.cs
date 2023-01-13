@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
@@ -229,7 +230,7 @@ namespace YTDownload.ViewModel
                 File.Move(tempFileMP3, finalFile);
                 File.Delete(tempFile);
 
-                EditFileMetadata(finalFile, YTElem);
+                await EditFileMetadata(finalFile, YTElem);
 
                 count++;
                 StatusMessage = msg + " Done Converting.";
@@ -261,8 +262,10 @@ namespace YTDownload.ViewModel
         /// </summary>
         /// <param name="filename"></param>
         /// <param name="YTElem"></param>
-        void EditFileMetadata(string filename, YTElement YTElem)
+        async Task EditFileMetadata(string filename, YTElement YTElem)
         {
+            TagLib.Id3v2.Tag.DefaultVersion = 3; //Windows Media Player & Groove Music dont like other versions.
+            TagLib.Id3v2.Tag.ForceDefaultVersion = true;
             TagLib.File tagFile = TagLib.File.Create(filename);
 
             tagFile.Tag.Album = YTElem.MetadataAlbum;
@@ -270,7 +273,30 @@ namespace YTDownload.ViewModel
             tagFile.Tag.Track = uint.Parse(YTElem.MetadataTracknumber);
             tagFile.Tag.Year = uint.Parse(YTElem.MetadataYear);
             tagFile.Tag.Performers = new string[] { YTElem.MetadataInterpreter };
-            TagLib.IPicture pic = new TagLib.Picture();
+
+            //Get the YT thumbnail as the albumb cover
+            HttpClient client = new HttpClient();
+            string thumbnailPath = Path.Combine(App.tempPath, "thumb" + Guid.NewGuid().ToString() + ".jpg");
+            try
+            {
+                HttpResponseMessage response = await client.GetAsync(YTElem.ThumbnailUrl);
+                response.EnsureSuccessStatusCode();
+                using (var fs = new FileStream(thumbnailPath, FileMode.Create))
+                {
+                    await response.Content.CopyToAsync(fs);
+                }
+
+                TagLib.IPicture pic = new TagLib.Picture(thumbnailPath);
+                tagFile.Tag.Pictures = new TagLib.IPicture[] { pic };
+            }
+            finally
+            {
+                client.Dispose();
+                if(File.Exists(thumbnailPath))
+                {
+                    File.Delete(thumbnailPath);
+                }
+            }
             
             tagFile.Save();
         }
