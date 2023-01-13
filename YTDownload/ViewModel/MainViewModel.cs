@@ -46,7 +46,7 @@ namespace YTDownload.ViewModel
 
         private readonly YoutubeClient _youtube = new();
         private Dictionary<string, YTElement> videoList = new Dictionary<string, YTElement>();
-        private YTElement? selectedYTEM = null;
+        private YTElement? selectedYTElem = null;
 
         [RelayCommand]
         async Task FetchVideo()
@@ -62,10 +62,10 @@ namespace YTDownload.ViewModel
                 .ToArray();
 
             IStreamInfo bestAudioStream = streams[0];
-            YTElement YTEM = new YTElement(bestAudioStream, video, videoThumbnail.Url);
+            YTElement YTElem = new YTElement(bestAudioStream, video, videoThumbnail.Url);
 
-            videoCollection.Add(YTEM);
-            videoList.Add(YTEM.StreamUrl, YTEM);
+            videoCollection.Add(YTElem);
+            videoList.Add(YTElem.StreamUrl, YTElem);
             StatusMessage = "";
             Url = "";
 
@@ -80,7 +80,7 @@ namespace YTDownload.ViewModel
         void RemoveVideo(object parameter)
         {
             YTElement videoToDelete = GetSelectedVideo(parameter);
-            bool isSelectedElement = videoToDelete.Equals(selectedYTEM);
+            bool isSelectedElement = videoToDelete.Equals(selectedYTElem);
             string? btnUrl = parameter.ToString();
             
             if (btnUrl != null)
@@ -109,46 +109,46 @@ namespace YTDownload.ViewModel
         {
             // Save previous changes in the ElementModel-Class before
             // loading in the values of the newly selected one.
-            if (selectedYTEM != null)
+            if (selectedYTElem != null)
             {
-                selectedYTEM.MetadataTitle = MetadataTitle;
-                selectedYTEM.MetadataAlbum = MetadataAlbum;
-                selectedYTEM.MetadataInterpreter = MetadataInterpreter;
-                selectedYTEM.MetadataYear = MetadataYear;
-                selectedYTEM.MetadataTracknumber= MetadataTracknumber;
+                selectedYTElem.MetadataTitle = MetadataTitle;
+                selectedYTElem.MetadataAlbum = MetadataAlbum;
+                selectedYTElem.MetadataInterpreter = MetadataInterpreter;
+                selectedYTElem.MetadataYear = MetadataYear;
+                selectedYTElem.MetadataTracknumber= MetadataTracknumber;
             }
             MetadataWindowVisibile = Visibility.Visible;
 
             try
             {
-                selectedYTEM = GetSelectedVideo(parameter);
+                selectedYTElem = GetSelectedVideo(parameter);
             }catch(Exception)
             {
                 StatusMessage = "Oops! Cant Edit Metadata";
                 return;
             }
 
-            MetadataTitle = selectedYTEM.MetadataTitle;
-            MetadataAlbum = selectedYTEM.MetadataAlbum;
-            MetadataInterpreter = selectedYTEM.MetadataInterpreter;
-            MetadataYear = selectedYTEM.MetadataYear;
-            MetadataTracknumber = selectedYTEM.MetadataTracknumber;
+            MetadataTitle = selectedYTElem.MetadataTitle;
+            MetadataAlbum = selectedYTElem.MetadataAlbum;
+            MetadataInterpreter = selectedYTElem.MetadataInterpreter;
+            MetadataYear = selectedYTElem.MetadataYear;
+            MetadataTracknumber = selectedYTElem.MetadataTracknumber;
         }
 
         YTElement GetSelectedVideo(object parameter)
         {
             string? btnUrl = parameter.ToString();
 
-            YTElement? YTEM = null;
+            YTElement? YTElem = null;
             if (btnUrl != null)
             {
-                _ = videoList.TryGetValue(btnUrl, out YTEM);
+                _ = videoList.TryGetValue(btnUrl, out YTElem);
             }
-            if (YTEM == null)
+            if (YTElem == null)
             {
                 throw new Exception("Failed getting currently selected video.");
             }
-            return YTEM;
+            return YTElem;
         }
 
         [RelayCommand]
@@ -156,13 +156,13 @@ namespace YTDownload.ViewModel
         {
             // Save previous changes in the ElementModel-Class before
             // loading in the values of the newly selected one.
-            if (selectedYTEM != null)
+            if (selectedYTElem != null)
             {
-                selectedYTEM.MetadataTitle = MetadataTitle;
-                selectedYTEM.MetadataAlbum = MetadataAlbum;
-                selectedYTEM.MetadataInterpreter = MetadataInterpreter;
-                selectedYTEM.MetadataYear = MetadataYear;
-                selectedYTEM.MetadataTracknumber = MetadataTracknumber;
+                selectedYTElem.MetadataTitle = MetadataTitle;
+                selectedYTElem.MetadataAlbum = MetadataAlbum;
+                selectedYTElem.MetadataInterpreter = MetadataInterpreter;
+                selectedYTElem.MetadataYear = MetadataYear;
+                selectedYTElem.MetadataTracknumber = MetadataTracknumber;
             }
 
             string folderPath = "";
@@ -174,13 +174,13 @@ namespace YTDownload.ViewModel
             }
 
             int count = 1;
-            foreach(YTElement YTEM in videoList.Values)
+            foreach(YTElement YTElem in videoList.Values)
             {
                 string randomName = Guid.NewGuid().ToString();
 
-                string randomFilename = Utils.SanitizeFileName($"{randomName}.{YTEM.Stream.Container.Name}");
+                string randomFilename = Utils.SanitizeFileName($"{randomName}.{YTElem.Stream.Container.Name}");
                 string randomFilenameMP3 = Utils.SanitizeFileName($"{randomName}.mp3");
-                string filenameMP3 = Utils.SanitizeFileName($"{YTEM.MetadataInterpreter} - {YTEM.MetadataTitle}.mp3");
+                string filenameMP3 = Utils.SanitizeFileName($"{YTElem.MetadataInterpreter} - {YTElem.MetadataTitle}.mp3");
 
                 string tempFile = Path.Combine(App.tempPath, randomFilename);
                 string tempFileMP3 = Path.Combine(App.tempPath, randomFilenameMP3);
@@ -189,7 +189,7 @@ namespace YTDownload.ViewModel
                 // Set up progress reporting
                 var progressHandler = new Progress<double>(p => StatusMessage = $"Downloading {count}/{videoList.Count}... {Math.Round(p*100,2)}%");
 
-                await _youtube.Videos.Streams.DownloadAsync(YTEM.Stream, tempFile, progressHandler);
+                await _youtube.Videos.Streams.DownloadAsync(YTElem.Stream, tempFile, progressHandler);
 
                 string msg = StatusMessage;
                 StatusMessage = msg + " Converting now. Please wait a bit.";
@@ -203,9 +203,9 @@ namespace YTDownload.ViewModel
                 File.Move(tempFileMP3, finalFile);
                 File.Delete(tempFile);
 
-                EditFileMetadata(finalFile, YTEM);
+                EditFileMetadata(finalFile, YTElem);
 
-                YTEM.IsFinishedDownloading = true;
+                YTElem.IsFinishedDownloading = true;
                 count++;
                 StatusMessage = msg + " Done Converting.";
             }
@@ -225,15 +225,15 @@ namespace YTDownload.ViewModel
             await c.Start($"-i {currentFile} -preset ultrafast {destinationFile}");
         }
 
-        void EditFileMetadata(string filename, YTElement YTEM)
+        void EditFileMetadata(string filename, YTElement YTElem)
         {
             TagLib.File tagFile = TagLib.File.Create(filename);
 
-            tagFile.Tag.Album = YTEM.MetadataAlbum;
-            tagFile.Tag.Title = YTEM.MetadataTitle;
-            tagFile.Tag.Track = uint.Parse(YTEM.MetadataTracknumber);
-            tagFile.Tag.Year = uint.Parse(YTEM.MetadataYear);
-            tagFile.Tag.Performers = new string[] { YTEM.MetadataInterpreter };
+            tagFile.Tag.Album = YTElem.MetadataAlbum;
+            tagFile.Tag.Title = YTElem.MetadataTitle;
+            tagFile.Tag.Track = uint.Parse(YTElem.MetadataTracknumber);
+            tagFile.Tag.Year = uint.Parse(YTElem.MetadataYear);
+            tagFile.Tag.Performers = new string[] { YTElem.MetadataInterpreter };
             
             tagFile.Save();
         }
