@@ -98,16 +98,16 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0"
-                       Text="Youtube URL:"
-                       Margin="5"
-                       Style="{StaticResource TextBlockRegular}"
-                       Foreground="{StaticResource titleColour1}"/>
+                           Text="Youtube URL:"
+                           Margin="5"
+                           Style="{StaticResource TextBlockRegular}"
+                           Foreground="{StaticResource titleColour1}"/>
                 <RibbonTextBox Grid.Column="1"
-                         Margin="5"
-                         Text="{Binding Url, UpdateSourceTrigger=PropertyChanged}"
-                         Style="{StaticResource NormalRibbonTextBoxStyle}"
-                         Height="30"
-                         IsEnabled="{Binding CanAddYTVideo}"
+                               Margin="5"
+                               Text="{Binding Url, UpdateSourceTrigger=PropertyChanged}"
+                               Style="{StaticResource NormalRibbonTextBoxStyle}"
+                               Height="30"
+                               IsEnabled="{Binding CanAddYTVideo}"
                                Command="{Binding FetchVideoCommand}"/>
                 <Button Grid.Column="2"
                         Content="Add Video"
@@ -134,7 +134,7 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <ItemsControl ItemsSource="{Binding VideoCollection}"
-                                  ItemTemplate="{StaticResource ResourceKey=YTVideoElement}">
+                                      ItemTemplate="{StaticResource ResourceKey=YTVideoElement}">
                         </ItemsControl>
                         <Button Grid.Row="1"
                                 Content="Download"
@@ -154,7 +154,7 @@
                         Visibility="{Binding MetadataWindowVisibile}">
                     <StackPanel>
                         <TextBlock Text="Metadata"
-                               Style="{StaticResource TextBlockTitle}"/>
+                                   Style="{StaticResource TextBlockTitle}"/>
                         <Grid Width="300">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -172,36 +172,36 @@
                                        Text="Title"
                                        Style="{StaticResource TextBlockRegular}"/>
                             <RibbonTextBox Grid.Row="0" Grid.Column="1"
-                                     Text="{Binding MetadataTitle}"
-                                     Style="{StaticResource NormalRibbonTextBoxStyle}"/>
+                                           Text="{Binding MetadataTitle}"
+                                           Style="{StaticResource NormalRibbonTextBoxStyle}"/>
 
                             <TextBlock Grid.Row="1" Grid.Column="0"
                                        Text="Album"
                                        Style="{StaticResource TextBlockRegular}"/>
                             <RibbonTextBox Grid.Row="1" Grid.Column="1"
-                                     Text="{Binding MetadataAlbum}"
-                                     Style="{StaticResource NormalRibbonTextBoxStyle}"/>
+                                           Text="{Binding MetadataAlbum}"
+                                           Style="{StaticResource NormalRibbonTextBoxStyle}"/>
 
                             <TextBlock Grid.Row="2" Grid.Column="0"
                                        Text="Interpreter"
                                        Style="{StaticResource TextBlockRegular}"/>
                             <RibbonTextBox Grid.Row="2" Grid.Column="1"
-                                     Text="{Binding MetadataInterpreter}"
-                                     Style="{StaticResource NormalRibbonTextBoxStyle}"/>
+                                           Text="{Binding MetadataInterpreter}"
+                                           Style="{StaticResource NormalRibbonTextBoxStyle}"/>
 
                             <TextBlock Grid.Row="3" Grid.Column="0"
                                        Text="Year"
                                        Style="{StaticResource TextBlockRegular}"/>
                             <RibbonTextBox Grid.Row="3" Grid.Column="1"
-                                     Text="{Binding MetadataYear}"
-                                     Style="{StaticResource NormalRibbonTextBoxStyle}"/>
+                                           Text="{Binding MetadataYear}"
+                                           Style="{StaticResource NormalRibbonTextBoxStyle}"/>
 
                             <TextBlock Grid.Row="4" Grid.Column="0"
                                        Text="Tracknumber"
                                        Style="{StaticResource TextBlockRegular}"/>
                             <RibbonTextBox Grid.Row="4" Grid.Column="1"
-                                     Text="{Binding MetadataTracknumber}"
-                                     Style="{StaticResource NormalRibbonTextBoxStyle}"/>
+                                           Text="{Binding MetadataTracknumber}"
+                                           Style="{StaticResource NormalRibbonTextBoxStyle}"/>
                         </Grid>
                     </StackPanel>
                 </Border>
