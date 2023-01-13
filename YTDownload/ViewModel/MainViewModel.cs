@@ -3,11 +3,13 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using Xabe.FFmpeg;
 using YoutubeExplode;
 using YoutubeExplode.Common;
 using YoutubeExplode.Videos;
@@ -175,17 +177,51 @@ namespace YTDownload.ViewModel
             int count = 1;
             foreach(YTElement YTEM in videoList.Values)
             {
-                string filename = Utils.SanitizeFileName($"{YTEM.MetadataInterpreter} - {YTEM.MetadataTitle}.{YTEM.Stream.Container.Name}");
-                string filePath = Path.Combine(folderPath, filename);
+                string randomName = Guid.NewGuid().ToString();
 
+                string randomFilename = Utils.SanitizeFileName($"{randomName}.{YTEM.Stream.Container.Name}");
+                string randomFilenameMP3 = Utils.SanitizeFileName($"{randomName}.mp3");
+                string filenameMP3 = Utils.SanitizeFileName($"{YTEM.MetadataInterpreter} - {YTEM.MetadataTitle}.mp3");
+
+                string tempFile = Path.Combine(App.tempPath, randomFilename);
+                string tempFileMP3 = Path.Combine(App.tempPath, randomFilenameMP3);
+
+                string finalFile = Path.Combine(folderPath, filenameMP3);
                 // Set up progress reporting
                 var progressHandler = new Progress<double>(p => StatusMessage = $"Downloading {count}/{videoList.Count}... {Math.Round(p*100,2)}%");
 
-                await _youtube.Videos.Streams.DownloadAsync(YTEM.Stream, filePath, progressHandler);
+                await _youtube.Videos.Streams.DownloadAsync(YTEM.Stream, tempFile, progressHandler);
+
+                string msg = StatusMessage;
+                StatusMessage = msg + " Converting now. Please wait a bit.";
+                
+                await Convert(tempFile, tempFileMP3);
+
+                if (File.Exists(finalFile))
+                {
+                    File.Delete(finalFile);
+                }
+                File.Move(tempFileMP3, finalFile);
+                File.Delete(tempFile);
+
                 YTEM.IsFinishedDownloading = true;
                 count++;
+                StatusMessage = msg + " Done Converting.";
             }
             StatusMessage = "";
+        }
+
+        async Task Convert(string currentFile, string destinationFile)
+        {
+            FFmpeg.SetExecutablesPath(App.ffmpegPath);
+
+            string msg = StatusMessage;
+            IConversion c = FFmpeg.Conversions.New();
+            c.OnProgress += (sender, args) =>
+            {
+                StatusMessage = msg + $" [{args.Duration}/{args.TotalLength}][{args.Percent}%]";
+            };
+            await c.Start($"-i {currentFile} -preset ultrafast {destinationFile}");
         }
     }
 }

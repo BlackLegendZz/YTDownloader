@@ -39,28 +39,54 @@ namespace YTDownload
         public async Task DownloadFfmpeg()
         {
             
-            string ffmpegUrl = "https://github.com/ffbinaries/ffbinaries-prebuilt/releases/download/v4.4.1/ffmpeg-4.4.1-win-64.zip";
-            string ffmpegZip = Path.Combine(App.localAppDataPath, "ffmpeg.zip");
+            string[] ffmpegUrls = { 
+                "https://github.com/ffbinaries/ffbinaries-prebuilt/releases/download/v4.4.1/ffmpeg-4.4.1-win-64.zip",
+                "https://github.com/ffbinaries/ffbinaries-prebuilt/releases/download/v4.4.1/ffprobe-4.4.1-win-64.zip"
+            };
+            string[] ffmpegZips = { 
+                Path.Combine(App.localAppDataPath, "ffmpeg.zip"),
+                Path.Combine(App.localAppDataPath, "ffprobe.zip")
+            };
+            string[] ffmpegExes = {
+                Path.Combine(App.ffmpegPath, "ffmpeg.exe"),
+                Path.Combine(App.ffmpegPath, "ffprobe.exe")
+            };
 
             if (!Directory.Exists(App.localAppDataPath))
             {
                 Directory.CreateDirectory(App.localAppDataPath);
             }
 
-            if (!File.Exists(App.ffmpegExe))
+            if (!Directory.Exists(App.tempPath))
             {
-                HttpClient client = new HttpClient();
-                HttpResponseMessage response = await client.GetAsync(ffmpegUrl);
-                response.EnsureSuccessStatusCode();
-
-                using (var fs = new FileStream(ffmpegZip, FileMode.Create))
-                {
-                    await response.Content.CopyToAsync(fs);
-                }
-
-                ZipFile.ExtractToDirectory(ffmpegZip, Path.Combine(App.localAppDataPath, "ffmpeg"));
-                File.Delete(ffmpegZip);
+                Directory.CreateDirectory(App.tempPath);
             }
+
+            HttpClient client = new HttpClient();
+            try
+            {
+                for (int i = 0; i < ffmpegUrls.Length; i++)
+                {
+                    if (!File.Exists(Path.Combine(App.ffmpegPath, ffmpegExes[i])))
+                    {
+                        HttpResponseMessage response = await client.GetAsync(ffmpegUrls[i]);
+                        response.EnsureSuccessStatusCode();
+
+                        using (var fs = new FileStream(ffmpegZips[i], FileMode.Create))
+                        {
+                            await response.Content.CopyToAsync(fs);
+                        }
+
+                        ZipFile.ExtractToDirectory(ffmpegZips[i], Path.Combine(App.ffmpegPath));
+                        File.Delete(ffmpegZips[i]);
+                    }
+                }
+            }
+            finally
+            {
+                client.Dispose();
+            }
+
         }
 
         private void ToggleMaximize()

@@ -14,7 +14,8 @@ namespace YTDownload
     /// </summary>
     public partial class App : Application
     {
-        public static readonly string localAppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Simple YTDownloader");
-        public static readonly string ffmpegExe = Path.Combine(localAppDataPath, "ffmpeg", "ffmpeg.exe");
+        public static readonly string localAppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Simple_YTDownloader");
+        public static readonly string ffmpegPath = Path.Combine(localAppDataPath, "ffmpeg");
+        public static readonly string tempPath = Path.Combine(localAppDataPath, "temp");
     }
 }
