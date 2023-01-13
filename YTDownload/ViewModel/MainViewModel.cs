@@ -48,6 +48,11 @@ namespace YTDownload.ViewModel
         private Dictionary<string, YTElement> videoList = new Dictionary<string, YTElement>();
         private YTElement? selectedYTElem = null;
 
+        /// <summary>
+        /// Try to get the audio stream with the highest quality from the provided url
+        /// and add the newly created YTElement to a list for display.
+        /// </summary>
+        /// <returns></returns>
         [RelayCommand]
         async Task FetchVideo()
         {
@@ -76,6 +81,11 @@ namespace YTDownload.ViewModel
             }
         }
 
+        /// <summary>
+        /// Removes a YTElement entry from the list of YT videos.
+        /// If the removed video is selected, hide the Metadata-Column in the UI as well.
+        /// </summary>
+        /// <param name="parameter"></param>
         [RelayCommand]
         void RemoveVideo(object parameter)
         {
@@ -104,6 +114,10 @@ namespace YTDownload.ViewModel
             }
         }
 
+        /// <summary>
+        /// Applies the users changes on the Metadata of the selected YTElement
+        /// </summary>
+        /// <param name="parameter"></param>
         [RelayCommand]
         void EditMetadata(object parameter)
         {
@@ -135,6 +149,12 @@ namespace YTDownload.ViewModel
             MetadataTracknumber = selectedYTElem.MetadataTracknumber;
         }
 
+        /// <summary>
+        /// Gets the reference of the users currently selected YTElement RadioButton
+        /// </summary>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         YTElement GetSelectedVideo(object parameter)
         {
             string? btnUrl = parameter.ToString();
@@ -151,6 +171,12 @@ namespace YTDownload.ViewModel
             return YTElem;
         }
 
+        /// <summary>
+        /// Goes through the list of all added YT videos, downloads them, 
+        /// converts them to MP3 and applies the Metadata-Information.
+        /// If the File already exists, the old one will get removed.
+        /// </summary>
+        /// <returns></returns>
         [RelayCommand]
         async Task DownloadAll()
         {
@@ -205,13 +231,18 @@ namespace YTDownload.ViewModel
 
                 EditFileMetadata(finalFile, YTElem);
 
-                YTElem.IsFinishedDownloading = true;
                 count++;
                 StatusMessage = msg + " Done Converting.";
             }
             StatusMessage = "";
         }
 
+        /// <summary>
+        /// Converts the current file to the destinationFile using FFmpeg with the 'ultrafast' preset.
+        /// </summary>
+        /// <param name="currentFile"></param>
+        /// <param name="destinationFile"></param>
+        /// <returns></returns>
         async Task Convert(string currentFile, string destinationFile)
         {
             FFmpeg.SetExecutablesPath(App.ffmpegPath);
@@ -225,6 +256,11 @@ namespace YTDownload.ViewModel
             await c.Start($"-i {currentFile} -preset ultrafast {destinationFile}");
         }
 
+        /// <summary>
+        /// Applies the Metadata-Informations made by the user to the convertet AudioFile
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="YTElem"></param>
         void EditFileMetadata(string filename, YTElement YTElem)
         {
             TagLib.File tagFile = TagLib.File.Create(filename);
@@ -234,6 +270,7 @@ namespace YTDownload.ViewModel
             tagFile.Tag.Track = uint.Parse(YTElem.MetadataTracknumber);
             tagFile.Tag.Year = uint.Parse(YTElem.MetadataYear);
             tagFile.Tag.Performers = new string[] { YTElem.MetadataInterpreter };
+            TagLib.IPicture pic = new TagLib.Picture();
             
             tagFile.Save();
         }

@@ -12,7 +12,6 @@ namespace YTDownload.Model
         public string StreamUrl { get; }
         public string ThumbnailUrl { get; }
         public IStreamInfo Stream { get; }
-        public bool IsFinishedDownloading { get; set; } = false;
 
         public string MetadataTitle { get; set; }
         public string MetadataAlbum { get; set; }
