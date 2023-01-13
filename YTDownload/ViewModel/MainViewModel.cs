@@ -216,11 +216,18 @@ namespace YTDownload.ViewModel
                 // Set up progress reporting
                 var progressHandler = new Progress<double>(p => StatusMessage = $"Downloading {count}/{videoList.Count}... {Math.Round(p*100,2)}%");
 
-                await _youtube.Videos.Streams.DownloadAsync(YTElem.Stream, tempFile, progressHandler);
-
                 string msg = StatusMessage;
+                try
+                {
+                    await _youtube.Videos.Streams.DownloadAsync(YTElem.Stream, tempFile, progressHandler);
+                }catch(IOException)
+                {
+                    StatusMessage = "Download Failed because the internet connection got cut off for a moment. Please try again.";
+                    return;
+                }
+
                 StatusMessage = msg + " Converting now. Please wait a bit.";
-                
+
                 await Convert(tempFile, tempFileMP3);
 
                 if (File.Exists(finalFile))
