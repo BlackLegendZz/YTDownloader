@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -204,6 +203,8 @@ namespace YTDownload.ViewModel
                 File.Move(tempFileMP3, finalFile);
                 File.Delete(tempFile);
 
+                EditFileMetadata(finalFile, YTEM);
+
                 YTEM.IsFinishedDownloading = true;
                 count++;
                 StatusMessage = msg + " Done Converting.";
@@ -222,6 +223,19 @@ namespace YTDownload.ViewModel
                 StatusMessage = msg + $" [{args.Duration}/{args.TotalLength}][{args.Percent}%]";
             };
             await c.Start($"-i {currentFile} -preset ultrafast {destinationFile}");
+        }
+
+        void EditFileMetadata(string filename, YTElement YTEM)
+        {
+            TagLib.File tagFile = TagLib.File.Create(filename);
+
+            tagFile.Tag.Album = YTEM.MetadataAlbum;
+            tagFile.Tag.Title = YTEM.MetadataTitle;
+            tagFile.Tag.Track = uint.Parse(YTEM.MetadataTracknumber);
+            tagFile.Tag.Year = uint.Parse(YTEM.MetadataYear);
+            tagFile.Tag.Performers = new string[] { YTEM.MetadataInterpreter };
+            
+            tagFile.Save();
         }
     }
 }
