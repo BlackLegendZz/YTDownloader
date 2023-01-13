@@ -57,7 +57,16 @@ namespace YTDownload.ViewModel
         async Task FetchVideo()
         {
             CanAddYTVideo = false;
-            Video video = await _youtube.Videos.GetAsync(Url);
+            Video video;
+            try
+            {
+                video = await _youtube.Videos.GetAsync(Url);
+            }catch(ArgumentException ex)
+            {
+                CanAddYTVideo = true;
+                StatusMessage = ex.Message;
+                return;
+            }
             Thumbnail videoThumbnail = video.Thumbnails.GetWithHighestResolution();
 
             StreamManifest streamManifest = await _youtube.Videos.Streams.GetManifestAsync(Url);
